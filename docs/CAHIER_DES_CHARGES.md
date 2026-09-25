@@ -75,6 +75,9 @@ Le périmètre fonctionnel couvre : gestion des sessions, des présences, des ex
 | **EF12** | Le relecteur ne peut pas relire son propre exercice | Quand je tente de relire mon propre exercice, alors je reçois une erreur 403 `AUTO_RELECTURE` | Must |
 | **EF13** | Le code de présence est rate-limité | Quand je me trompe 5 fois de code en moins de 2 minutes, alors je suis bloqué 2 minutes | Should |
 | **EF14** | L'exercice en attente est visible dans le tableau | Quand un relecteur n'a pas rendu sa relecture, alors la colonne `relecturesEnAttente` du tableau l'indique | Must |
+| **EF15** | Chaque exercice est relu par deux pairs | Quand un exercice est déposé, alors deux relecteurs distincts sont assignés | Must |
+| **EF16** | La note finale est la moyenne des deux notes | Quand les deux relectures sont rendues, alors la note finale est la moyenne (arrondie à l'entier) | Must |
+| **EF17** | Si un seul relecteur a rendu, la note est provisoire | Quand une seule relecture est rendue, alors la note affichée est celle du relecteur, marquée `provisoire: true` | Must |
 
 ---
 
@@ -100,7 +103,7 @@ Le périmètre fonctionnel couvre : gestion des sessions, des présences, des ex
 | **RG2** | Un étudiant ne peut pas relire son propre exercice | Q5 |
 | **RG3** | Une note est un entier compris entre 0 et 20 | Q9 |
 | **RG4** | Un étudiant ne peut marquer qu'une seule présence par session | Q16 (implicite) |
-| **RG5** | Un étudiant ne peut déposer qu'un seul exercice par session | Q16 (implicite) |
+| **RG6** | Un exercice est relu par **deux** étudiants distincts, hors auteur | Q6 modifié par enveloppe étape 3 |
 | **RG6** | Un exercice n'a qu'un seul relecteur | Q6 |
 | **RG7** | Le relecteur est tiré au hasard parmi les étudiants présents à la session, hors l'auteur | Q7 |
 | **RG8** | L'étudiant relu ne voit jamais le nom de son relecteur | Q8 |
@@ -112,6 +115,8 @@ Le périmètre fonctionnel couvre : gestion des sessions, des présences, des ex
 | **RG14** | Après 5 erreurs de code en moins de 2 minutes, l'étudiant est bloqué 2 minutes | Q4 |
 | **RG15** | Une présence ne peut pas être marquée après la clôture de la session | Q3 + Q12 |
 | **RG16** | Le tableau du formateur présente, par étudiant : présences, exercices déposés, moyenne des notes reçues, relectures en attente | Q16 |
+| **RG17** | La note finale est la moyenne des deux notes, arrondie à l'entier le plus proche | Enveloppe étape 3 |
+| **RG18** | Tant que les deux relectures ne sont pas rendues, la note affichée est provisoire | Enveloppe étape 3 |
 
 ---
 
@@ -139,6 +144,15 @@ Le client ne précise **nulle part** :
 | Aucun relecteur disponible | L'exercice reste au statut **`EN_ATTENTE`** et apparaît comme tel dans le tableau (Q11). Le formateur pourra le voir et agir manuellement plus tard. | Q11 décrit exactement ce cas : « L'exercice reste en attente et je dois le voir clairement dans mon tableau. » |
 | Session avec un seul étudiant présent | L'étudiant peut déposer son exercice, mais **aucune relecture n'est assignée** (RG2 : interdiction de se relire soi-même). L'exercice reste `EN_ATTENTE`. | Conséquence directe de RG2 et Q7. |
 | Statut d'un exercice déposé sans relecture assignée | Reste `DEPOSE` puis bascule en `EN_ATTENTE` tant qu'aucun relecteur n'est trouvé. | Cohérent avec Q11. |
+
+### Changement de besoin (enveloppe étape 3)
+
+| Point | Décision | Pourquoi |
+|---|---|---|
+| Nombre de relecteurs par exercice | **2** au lieu de 1 | Enveloppe : un seul relecteur ne suffit pas, l'étudiant peut ne jamais avoir de note |
+| Note finale | Moyenne des 2 notes, arrondie à l'entier | Enveloppe : « la note retenue est la moyenne des deux » |
+| Note provisoire | Affichée si une seule relecture rendue, marquée `provisoire: true` | Enveloppe : « si un seul des deux a rendu, on affiche sa note en attendant, mais marquée comme provisoire » |
+| RG6 initiale | **Abrogée** par le changement | Enveloppe étape 3 |
 
 ---
 
