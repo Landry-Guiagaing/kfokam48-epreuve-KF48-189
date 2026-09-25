@@ -1,6 +1,7 @@
 package cm.kfokam48.backend.controller;
 
 import cm.kfokam48.backend.dto.request.CreerSessionRequest;
+import cm.kfokam48.backend.dto.response.SessionClotureResponse;
 import cm.kfokam48.backend.dto.response.SessionResponse;
 import cm.kfokam48.backend.service.SessionService;
 import jakarta.validation.Valid;
@@ -23,5 +24,10 @@ public class SessionController {
             @Valid @RequestBody CreerSessionRequest request) {
         SessionResponse response = sessionService.ouvrir(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/{id}/cloture")
+    public ResponseEntity<SessionClotureResponse> cloturer(@PathVariable Long id) {
+        return ResponseEntity.ok(sessionService.cloturer(id));
     }
 }
