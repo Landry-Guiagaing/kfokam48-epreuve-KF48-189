@@ -7,5 +7,6 @@ public record ExerciceDetailResponse(
         String lien,
         String statut,
         Integer note,
-        String commentaire
+        String commentaire,
+        boolean noteProvisoire
 ) {}
