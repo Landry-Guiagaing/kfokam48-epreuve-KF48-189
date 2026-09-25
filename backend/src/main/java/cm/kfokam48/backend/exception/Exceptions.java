@@ -53,4 +53,11 @@ public final class Exceptions {
             super(HttpStatus.BAD_REQUEST, "VALIDATION_ERREUR", message);
         }
     }
+    
+    public static class EtudiantInconnuException extends ApiException {
+        public EtudiantInconnuException(Long etudiantId) {
+            super(HttpStatus.NOT_FOUND, "ETUDIANT_INCONNU",
+                  "L'étudiant " + etudiantId + " est inconnu.");
+        }
+    }
 }
