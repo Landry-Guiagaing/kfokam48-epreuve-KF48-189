@@ -37,4 +37,22 @@ public class GlobalExceptionHandler {
                 .body(new ErreurResponse("ERREUR_INTERNE",
                         "Une erreur interne est survenue."));
     }
+
+        @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ErreurResponse> handleDataIntegrity(
+            org.springframework.dao.DataIntegrityViolationException ex) {
+        // Cas typique : violation d'une contrainte UNIQUE en cas de concurrence.
+        // On renvoie un 409 avec un code métier, jamais une 500.
+        String msg = ex.getMostSpecificCause().getMessage();
+        if (msg != null && msg.contains("PRESENCE")) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(new ErreurResponse("DEJA_PRESENT",
+                            "Vous avez déjà marqué votre présence."));
+        }
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(new ErreurResponse("CONFLIT",
+                        "Conflit d'intégrité des données."));
+    }
 }
