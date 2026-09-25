@@ -1,6 +1,7 @@
 package cm.kfokam48.backend.controller;
 
 import cm.kfokam48.backend.dto.request.DeposerExerciceRequest;
+import cm.kfokam48.backend.dto.response.ExerciceDetailResponse;
 import cm.kfokam48.backend.dto.response.ExerciceResponse;
 import cm.kfokam48.backend.service.ExerciceService;
 import jakarta.validation.Valid;
@@ -23,5 +24,10 @@ public class ExerciceController {
             @Valid @RequestBody DeposerExerciceRequest request) {
         ExerciceResponse response = exerciceService.deposer(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ExerciceDetailResponse> consulter(@PathVariable Long id) {
+        return ResponseEntity.ok(exerciceService.consulter(id));
     }
 }
