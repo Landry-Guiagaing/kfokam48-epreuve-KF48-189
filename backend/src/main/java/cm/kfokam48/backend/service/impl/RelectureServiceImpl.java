@@ -4,10 +4,7 @@ import cm.kfokam48.backend.dto.request.RendreRelectureRequest;
 import cm.kfokam48.backend.dto.response.RelectureResponse;
 import cm.kfokam48.backend.entity.Exercice;
 import cm.kfokam48.backend.entity.Relecture;
-import cm.kfokam48.backend.exception.Exceptions.AutoRelectureException;
-import cm.kfokam48.backend.exception.Exceptions.NoteInvalideException;
-import cm.kfokam48.backend.exception.Exceptions.RelectureDejaRendueException;
-import cm.kfokam48.backend.exception.Exceptions.RelectureInconnueException;
+import cm.kfokam48.backend.exception.Exceptions.*;
 import cm.kfokam48.backend.repository.ExerciceRepository;
 import cm.kfokam48.backend.repository.RelectureRepository;
 import cm.kfokam48.backend.service.RelectureService;
@@ -32,43 +29,40 @@ public class RelectureServiceImpl implements RelectureService {
     @Transactional
     public RelectureResponse rendre(Long relectureId, RendreRelectureRequest request) {
 
-        // 1) Charger la relecture
         Relecture relecture = relectureRepository.findById(relectureId)
                 .orElseThrow(() -> new RelectureInconnueException(relectureId));
 
-        // 2) Vérifier que la note est bien un entier entre 0 et 20 (RG3)
-        if (request.note() == null
-                || request.note() < 0
-                || request.note() > 20) {
+        if (request.note() == null || request.note() < 0 || request.note() > 20) {
             throw new NoteInvalideException();
         }
 
-        // 3) Vérifier l'auto-relecture (RG2)
         Exercice exercice = relecture.getExercice();
         if (exercice.getEtudiant().getId().equals(relecture.getRelecteur().getId())) {
             throw new AutoRelectureException();
         }
 
-        // 4) Vérifier la session (RG9) : correction possible tant que non clôturée
         boolean sessionCloturee = exercice.getSession().getClotureAt() != null;
-
-        // 5) Vérifier si déjà rendue ET session clôturée (RG9 + RG15)
         boolean dejaRendue = relecture.getStatut() == Relecture.StatutRelecture.RELUE;
 
         if (dejaRendue && sessionCloturee) {
             throw new RelectureDejaRendueException();
         }
 
-        // 6) Mettre à jour la relecture
         relecture.setNote(request.note());
         relecture.setCommentaire(request.commentaire());
         relecture.setStatut(Relecture.StatutRelecture.RELUE);
         relecture.setRendueAt(LocalDateTime.now());
-
         Relecture saved = relectureRepository.save(relecture);
 
-        // 7) Mettre à jour le statut de l'exercice
-        exercice.setStatut(Exercice.StatutExercice.RELUE);
+        // Recalculer le statut de l'exercice (RG17, RG18)
+        long rendues = relectureRepository.countByExerciceIdAndStatut(
+                exercice.getId(), Relecture.StatutRelecture.RELUE);
+
+        if (rendues >= 2) {
+            exercice.setStatut(Exercice.StatutExercice.RELUE);
+        } else if (rendues == 1) {
+            exercice.setStatut(Exercice.StatutExercice.PARTIELLEMENT_RELUE);
+        }
         exerciceRepository.save(exercice);
 
         return new RelectureResponse(

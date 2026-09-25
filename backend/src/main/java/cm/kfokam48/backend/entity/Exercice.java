@@ -37,7 +37,7 @@ public class Exercice {
         if (deposeAt == null) deposeAt = LocalDateTime.now();
     }
 
-    public enum StatutExercice { DEPOSE, EN_ATTENTE, RELUE, CLOTURE }
+        public enum StatutExercice { DEPOSE, EN_ATTENTE, PARTIELLEMENT_RELUE, RELUE, CLOTURE }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

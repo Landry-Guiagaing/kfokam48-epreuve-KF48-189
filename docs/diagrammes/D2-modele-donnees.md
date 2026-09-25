@@ -10,7 +10,7 @@ erDiagram
     SESSION ||--o{ EXERCICE : "reçoit"
     ETUDIANT ||--o{ PRESENCE : "marque"
     ETUDIANT ||--o{ EXERCICE : "dépose"
-    EXERCICE ||--|| RELECTURE : "est relu par"
+        EXERCICE ||--o{ RELECTURE : "est relu par 2 pairs"
 
     PROMOTION {
         bigint id PK
@@ -52,15 +52,15 @@ erDiagram
         timestamp depose_at
     }
 
-    RELECTURE {
+        RELECTURE {
         bigint id PK
-        bigint exercice_id FK "unique"
-        bigint relecteur_id FK "étudiant assigné"
+        bigint exercice_id FK "2 relectures par exercice, pas unique"
+        bigint relecteur_id FK
         int note "0 à 20, entier"
         text commentaire
         varchar statut "EN_ATTENTE | RELUE"
         timestamp assignee_at
-        timestamp rendue_at "null tant que non rendue"
+        timestamp rendue_at
     }
 ```
 

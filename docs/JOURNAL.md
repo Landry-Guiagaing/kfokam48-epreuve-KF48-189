@@ -19,3 +19,15 @@
 **Bloqué :** ~2 h sur la configuration Spring Boot 4.1.1 (Initializr ne propose plus 3.3.x, starters de test générés invalides). ~30 min sur un fichier `DeposerExerciceRequest.java` oublié qui cassait la compilation. ~20 min sur des fichiers backend (pom.xml, application.yml, migrations) restés hors du suivi Git : le `git add backend/src/main/java/` ne les prenait pas en compte. Corrigé par un commit de rattrapage.
 
 **IA :** m'a proposé la structure de packages et le code des 9 issues. J'ai vérifié chaque endpoint en le confrontant au contrat `api/contrat.yaml` : chemins, verbes, codes HTTP, format d'erreur `{ code, message }`. Tests curl exécutés manuellement pour valider cas nominal + cas d'erreur de chaque endpoint.
+
+## Étape 3 — Enveloppe
+
+**Fait :** deux sujets séparés. (1) Bug de concurrence sur `POST /api/presences` reproduit par un test avant correction, puis corrigé par un handler global `DataIntegrityViolationException` → 409 au lieu de 500. (2) Changement de besoin : passage de 1 à 2 relecteurs par exercice, note finale = moyenne, note provisoire tant que les 2 ne sont pas rendues. Analyse mise à jour (CDC, D2, D4), migration V3 ajoutée, contrat API mis à jour.
+
+**Bloqué :** ~30 min sur la reproduction du bug (il faut vraiment 2 threads simultanés, un test séquentiel ne reproduit pas). ~20 min sur la migration V3 : préserver les données existantes alors que la contrainte `UNIQUE(exercice_id)` est supprimée.
+
+**IA :** m'a proposé le test de concurrence avec `CountDownLatch` et `AtomicInteger`. Vérifié en exécutant le test AVANT le correctif : il échoue bien (1 succès, 0 conflit, 1 erreur 500). Après le correctif, il passe (1 succès, 1 conflit, 0 erreur).
+
+**Ce que j'ai sorti du périmètre pour absorber le changement, et pourquoi :** l'issue #13 (rate-limiting, Could) et l'issue #9 (correction de relecture, Should) sont abandonnées. Le changement de besoin est un Must tardif ; les Could et Should sacrifiables passent en dernier.
+
+**Note mise à jour (DoD) :** une issue n'est plus terminée tant que le test correspondant ne passe pas.

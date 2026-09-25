@@ -160,7 +160,7 @@ paths:
                     nom: { type: string }
                     presences: { type: integer }
                     exercicesDeposes: { type: integer }
-                    moyenne: { type: number, nullable: true }
+                    moyenne: { type: number, nullable: true, description: "Moyenne des notes finales des 2 relectures" }
                     relecturesEnAttente: { type: integer }
         "404": { $ref: "#/components/responses/Erreur" }   # PROMOTION_INCONNUE
 
@@ -279,6 +279,7 @@ paths:
                   statut: { type: string }
                   note: { type: integer, nullable: true, minimum: 0, maximum: 20 }
                   commentaire: { type: string, nullable: true }
+                  noteProvisoire: { type: boolean }
         "404": { $ref: "#/components/responses/Erreur" }   # EXERCICE_INCONNU
 
   /api/sessions:
