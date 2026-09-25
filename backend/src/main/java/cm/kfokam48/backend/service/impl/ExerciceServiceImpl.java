@@ -13,6 +13,7 @@ import cm.kfokam48.backend.exception.Exceptions.SessionInconnueException;
 import cm.kfokam48.backend.repository.EtudiantRepository;
 import cm.kfokam48.backend.repository.ExerciceRepository;
 import cm.kfokam48.backend.repository.SessionRepository;
+import cm.kfokam48.backend.service.AssignationService;
 import cm.kfokam48.backend.service.ExerciceService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,13 +27,16 @@ public class ExerciceServiceImpl implements ExerciceService {
     private final SessionRepository sessionRepository;
     private final EtudiantRepository etudiantRepository;
     private final ExerciceRepository exerciceRepository;
+    private final AssignationService assignationService;
 
     public ExerciceServiceImpl(SessionRepository sessionRepository,
                                EtudiantRepository etudiantRepository,
-                               ExerciceRepository exerciceRepository) {
+                               ExerciceRepository exerciceRepository,
+                               AssignationService assignationService) {
         this.sessionRepository = sessionRepository;
         this.etudiantRepository = etudiantRepository;
         this.exerciceRepository = exerciceRepository;
+        this.assignationService = assignationService;
     }
 
     @Override
@@ -72,7 +76,14 @@ public class ExerciceServiceImpl implements ExerciceService {
 
         Exercice saved = exerciceRepository.save(exercice);
 
-        return new ExerciceResponse(saved.getId(), saved.getStatut().name());
+        // 7) Tenter d'assigner un relecteur (EF7, RG2, RG6, RG7)
+        assignationService.assigner(saved);
+
+        // On relit l'exercice depuis la base pour récupérer le statut à jour
+        Exercice rafraichi = exerciceRepository.findById(saved.getId())
+                .orElse(saved);
+
+        return new ExerciceResponse(rafraichi.getId(), rafraichi.getStatut().name());
     }
 
     private boolean estUrlValide(String lien) {
