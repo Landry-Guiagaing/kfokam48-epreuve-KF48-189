@@ -31,3 +31,13 @@
 **Ce que j'ai sorti du périmètre pour absorber le changement, et pourquoi :** l'issue #13 (rate-limiting, Could) et l'issue #9 (correction de relecture, Should) sont abandonnées. Le changement de besoin est un Must tardif ; les Could et Should sacrifiables passent en dernier.
 
 **Note mise à jour (DoD) :** une issue n'est plus terminée tant que le test correspondant ne passe pas.
+
+## Étape 4 — Version finale (v1.0)
+
+**Fait :** CHANGELOG.md rédigé, README.md testé depuis un clone vierge, Dockerfile backend + frontend, docker-compose.yml. Frontend React avec 3 écrans (formateur, étudiant, relecteur) : couche API centralisée dans `src/api/`, états de chargement et d'erreur gérés. Jalon `[JALON] v1.0` poussé.
+
+**Bloqué :** ~15 min sur le Dockerfile backend (le wrapper `mvnw` doit être exécutable, `chmod +x mvnw` dans le Dockerfile).
+
+**IA :** m'a proposé la configuration Docker multi-stage. Vérifié en lançant `docker compose up --build` depuis un dossier vierge, puis en testant chaque endpoint.
+
+**Backlog restant :** issues #9, #13 abandonnées (périmètre sacrifié documenté en étape 3). Toutes les Must livrées.

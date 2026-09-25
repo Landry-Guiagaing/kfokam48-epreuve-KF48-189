@@ -1,0 +1,21 @@
+body {
+  font-family: system-ui, sans-serif;
+  max-width: 720px;
+  margin: 40px auto;
+  padding: 0 16px;
+  background: #f7f7f8;
+  color: #1a1a1a;
+}
+h1 { font-size: 1.3rem; }
+h2 { font-size: 1rem; margin-top: 1.5rem; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+form { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+input { flex: 1 1 160px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; }
+button { padding: 6px 14px; border: none; border-radius: 4px; background: #2563eb; color: white; cursor: pointer; }
+button:hover { background: #1d4ed8; }
+pre { background: #111; color: #0f0; padding: 10px; border-radius: 4px; white-space: pre-wrap; word-break: break-word; font-size: 0.85rem; }
+table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+th, td { border: 1px solid #ddd; padding: 6px 8px; font-size: 0.85rem; text-align: left; }
+.row { display: flex; gap: 8px; align-items: center; margin-bottom: 1rem; }
+.tabs { display: flex; gap: 4px; margin-bottom: 1rem; }
+.tab-btn { padding: 8px 16px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer; }
+.tab-btn.active { background: #2563eb; color: white; border-color: #2563eb; }
