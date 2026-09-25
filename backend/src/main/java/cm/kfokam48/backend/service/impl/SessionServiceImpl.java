@@ -1,10 +1,13 @@
 package cm.kfokam48.backend.service.impl;
 
 import cm.kfokam48.backend.dto.request.CreerSessionRequest;
+import cm.kfokam48.backend.dto.response.SessionClotureResponse;
 import cm.kfokam48.backend.dto.response.SessionResponse;
 import cm.kfokam48.backend.entity.Promotion;
 import cm.kfokam48.backend.entity.Session;
 import cm.kfokam48.backend.exception.Exceptions.PromotionInconnueException;
+import cm.kfokam48.backend.exception.Exceptions.SessionDejaClotureeException;
+import cm.kfokam48.backend.exception.Exceptions.SessionInconnueException;
 import cm.kfokam48.backend.repository.PromotionRepository;
 import cm.kfokam48.backend.repository.SessionRepository;
 import cm.kfokam48.backend.service.SessionService;
@@ -57,7 +60,22 @@ public class SessionServiceImpl implements SessionService {
         );
     }
 
-    /** RG1 : le code est unique parmi les sessions actives. */
+    @Override
+    @Transactional
+    public SessionClotureResponse cloturer(Long sessionId) {
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new SessionInconnueException(sessionId));
+
+        if (session.getClotureAt() != null) {
+            throw new SessionDejaClotureeException();
+        }
+
+        session.setClotureAt(LocalDateTime.now());
+        Session saved = sessionRepository.save(session);
+
+        return new SessionClotureResponse(saved.getId(), saved.getClotureAt());
+    }
+
     private String genererCodeUnique() {
         for (int i = 0; i < 50; i++) {
             String code = codeAleatoire();
